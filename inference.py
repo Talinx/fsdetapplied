@@ -237,9 +237,7 @@ if __name__ == "__main__":
         models = os.listdir(models_path)
         for fmodel in models:
             m = pattern_name.fullmatch(fmodel)
-            #if m is None or not m.group(1).startswith("2023-03-24"):
-            if m is None or not m.group(1).startswith("2023-03-24 10"):
-            # if m is None:
+            if m is None:
                 print(f"Skipping {fmodel}, name format wrong.")
                 continue
             inference_model(fmodel, m.group(1), args.stats, threshold, count_images_with_bbox)
