@@ -53,6 +53,25 @@ def filter_boxes_and_labels_label(boxes, labels):
 
 
 def train(net, info: str="", k=k, epochs=epochs, epochinterval=50, epochonlyoneloss=1800, dataset_type="FoodQS", fsdet_losses=False):
+    """train a network
+
+    Parameters
+    ----------
+    net : nn.Module
+        network to train
+    info : str
+        short descrition of the model, data set, hyperparameters...
+    k : int
+        k (few-shot hyperparameter)
+    epochinterval : int
+        epoch interval between different losses, only for non-FsDet-losses
+    epochonlyoneloss : int
+        epoch from which on only the last layers will be trained, only for non-FsDet losses
+    dataset_type : str
+        dataset to use, either FoodQS or Pollen
+    fsdet_losses : bool
+        whether to use FsDet fine-tuning or train the whole network
+    """
     if dataset_type == "FoodQS":
         train_set, validation_set = PollenFoodQSDataset(k=k), PollenFoodQSDataset(k=100, skip_k=k)
     else:
@@ -166,6 +185,18 @@ def train(net, info: str="", k=k, epochs=epochs, epochinterval=50, epochonlyonel
 
 
 def array_str_to_array(s):
+    """convert array string to python list
+
+    Parameters
+    ----------
+    s : str
+        string describing array, e.g. [1, 2, 3, 5]
+
+    Returns
+    -------
+    list
+        parsed python list
+    """
     output = []
     s = s.replace("[", "")
     s = s.replace("]", "")
@@ -176,6 +207,20 @@ def array_str_to_array(s):
 
 
 def model_type_to_model(model_type, pretrained=False):
+    """convert model type to actual model
+
+    Parameters
+    ----------
+    model_type : str
+        model type, one of fasterrcnn, mobilenet, mobilenet320
+    pretrained : bool
+        whether the model should be pre-trained with COCO
+
+    Returns
+    -------
+    nn.Module
+        model/network
+    """
     if model_type == "fasterrcnn":
         return get_new_model_fasterrcnn(pretrained=pretrained)
     if model_type == "mobilenet":
@@ -185,6 +230,18 @@ def model_type_to_model(model_type, pretrained=False):
 
 
 def model_type_to_name(model_type):
+    """Convert model type to name of the function for that module from the PyTorch library
+
+    Parameters
+    ----------
+    model_type : str
+        model type
+
+    Returns
+    -------
+    str
+        PyTorch function name for that model
+    """
     if model_type == "fasterrcnn":
         return "fasterrcnn_resnet50_fpn"
     if model_type == "mobilenet":

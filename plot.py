@@ -14,6 +14,20 @@ pattern_name = re.compile("losses validation (.*).npy")
 
 
 def convert_name_to_title(name):
+    """Convert the (file) name of the model to its title/description
+
+    The name is not very descriptive (containing only the training date and time), whereas the title describes the model.
+
+    Parameters
+    ----------
+    name : str
+        name of the model
+
+    Returns
+    -------
+    str
+        model title/description
+    """
     log_file = os.path.join(logs_path, f"training {name}.log")
     title = ""
     if os.path.isfile(log_file):
@@ -28,6 +42,13 @@ def convert_name_to_title(name):
 
 
 def plot(name):
+    """plot losses for a model
+
+    Parameters
+    ----------
+    name : str
+        name of the model
+    """
     title = convert_name_to_title(name)
     if title == "":
         print(f"Skipping {name}.")

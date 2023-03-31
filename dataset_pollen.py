@@ -13,6 +13,18 @@ from label_parser import parse_xml_file
 
 
 def get_image_tensor(filename):
+    """filename to tensor, also crops image to 1024x1024
+
+    Parameters
+    ----------
+    filename : str
+        image file name
+
+    Returns
+    -------
+    torch.Tensor
+        image tensor
+    """
     input_image = Image.open(filename)
     preprocess = transforms.Compose([
         transforms.Resize(1024),
@@ -24,6 +36,18 @@ def get_image_tensor(filename):
 
 
 def get_image_tensor_full_size(filename):
+    """filename to tensor, uncropped
+
+    Parameters
+    ----------
+    filename : str
+        image file name
+
+    Returns
+    -------
+    torch.Tensor
+        image tensor
+    """
     input_image = Image.open(filename)
     preprocess = transforms.Compose([
         transforms.ToTensor(),
@@ -33,6 +57,18 @@ def get_image_tensor_full_size(filename):
 
 
 def get_image(filename):
+    """filename to PIL Image, also crops image to 1024x1024
+
+    Parameters
+    ----------
+    filename : str
+        image file name
+
+    Returns
+    -------
+    Image
+        image
+    """
     input_image = Image.open(filename)
     preprocess = transforms.Compose([
         transforms.Resize(1024),
@@ -43,6 +79,18 @@ def get_image(filename):
 
 
 def get_image_full_size(filename):
+    """filename to PIL Image, uncropped
+
+    Parameters
+    ----------
+    filename : str
+        image file name
+
+    Returns
+    -------
+    Image
+        image
+    """
     input_image = Image.open(filename)
     return input_image
 

@@ -20,6 +20,18 @@ pattern_dataset = re.compile(".*[iI][nN][fF][oO]:.*Data set: (.*)")
 
 
 def convert_name_to_dataset_type(name):
+    """get the data set type used to train a model with a certain name
+
+    Parameters
+    ----------
+    name : str
+        name of the model
+
+    Returns
+    -------
+    str
+        data set used to train the model
+    """
     log_file = os.path.join(logs_path, f"training {name}.log")
     dataset_type = "FoodQS"
     if os.path.isfile(log_file):
@@ -34,6 +46,24 @@ def convert_name_to_dataset_type(name):
 
 
 def add_bounding_boxes(image, predictions, dataset, threshold: float=0.0):
+    """add bounding boxes from model inference
+
+    Parameters
+    ----------
+    image : Image
+        image to add bounding boxes too
+    predictions : dict
+        predictions from the model
+    dataset : torch.utils.data.Dataset
+        dataset used to train model
+    threshold : float
+        threshold for scores of added bounding boxes
+
+    Returns
+    -------
+    Image
+        image with bounding boxes
+    """
     boxes = predictions['boxes']
     labels = predictions['labels']
     scores = predictions['scores']
@@ -54,6 +84,22 @@ def add_bounding_boxes(image, predictions, dataset, threshold: float=0.0):
 
 
 def add_bounding_boxes_labels(image, targets, labels):
+    """add bounding boxes from labeled data set
+
+    Parameters
+    ----------
+    image : Image
+        image to add bounding boxes too
+    targets : list
+        list of bounding boxes
+    labels : list
+        list of labels for the bounding boxes
+
+    Returns
+    -------
+    Image
+        image with bounding boxes
+    """
     image_draw = ImageDraw.Draw(image)
     for i, t in enumerate(targets):
         if t[2] == 0.0 and t[3] == 0.0:
@@ -65,6 +111,24 @@ def add_bounding_boxes_labels(image, targets, labels):
 
 
 def get_ground_truth_and_union(w, h, x_targets, x_labels):
+    """get ground truth and union for IoU calculation
+
+    Parameters
+    ----------
+    w : int
+        image width
+    h : int
+        image height
+    x_targets : list
+        bounding boxes from data set
+    x_labels : list
+        labels from data set
+
+    Returns
+    -------
+    tuple
+        tuple of ground truth and union, one of each for each class
+    """
     ground_truth = [np.full((w, h), False) for i in range(num_classes)]
     union = [np.full((w, h), False) for i in range(num_classes)]
     # construct ground truth mask for each class
@@ -82,6 +146,30 @@ def get_ground_truth_and_union(w, h, x_targets, x_labels):
 
 
 def intersection_over_union(image, x_targets, x_labels, y_targets, y_labels, y_scores, threshold=0.5):
+    """calculate the intersection over union
+
+    Parameters
+    ----------
+    image : Image
+        input image
+    x_targets : list
+        bounding boxes from data set
+    x_labels : list
+        labels from data set
+    y_targets : list
+        bounding boxes from model inference
+    y_labels : list
+        labels from model inference
+    y_scores : list
+        scores from model inference
+    threshold : float
+        threshold for bounding boxes to use
+
+    Returns
+    -------
+    list
+        IoU for each class
+    """
     w, h = image.size
     intersection = [np.full((w, h), False) for i in range(num_classes)]
     # construct ground truth mask for each class
@@ -112,6 +200,24 @@ def intersection_over_union(image, x_targets, x_labels, y_targets, y_labels, y_s
 
 
 def inference(net, generate_stats: bool=False, threshold: float=0.9, dataset_type: str="FoodQS"):
+    """perform inference with a model
+
+    Parameters
+    ----------
+    net : nn.Module
+        model to use
+    generate_stats : bool
+        whether to generate stats, i.e. mAP values
+    threshold : float
+        threshold for adding bounding boxes to images
+    dataset_type : str
+        data set to use
+
+    Returns
+    -------
+    tuple
+        tuple of output images, IoU values, mAP metrics, metrics per class, class number to name mapping, count of images with at least one bounding box
+    """
     dataset = PollenFoodQSDataset() if dataset_type == "FoodQS" else PollenDataset()
     dataloader = DataLoader(dataset, batch_size=inference_batch_size, shuffle=False, num_workers=cpu_count())
     net.eval()
@@ -168,6 +274,21 @@ def inference(net, generate_stats: bool=False, threshold: float=0.9, dataset_typ
 
 
 def inference_model(fmodel, name, generate_stats: bool=False, threshold: float=0.9, count_images_with_bbox: bool = False):
+    """perform inference with a model from a certain file
+
+    Parameters
+    ----------
+    fmodel : str
+        model file name
+    name : str
+        name of the model
+    generate_stats : bool
+        whether to generate stats, i.e. mAP values
+    threshold : float
+        threshold for adding bounding boxes to images
+    count_images_with_bbox : bool
+        whether to count images with at least one bounding box
+    """
     print(f"Performing inference with {name} ({convert_name_to_title(name)})...")
     model_file = os.path.join(models_path, fmodel)
     model = torch.load(model_file)
