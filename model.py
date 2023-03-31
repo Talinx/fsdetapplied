@@ -31,11 +31,3 @@ def get_new_model_mobilenet_320(pretrained=False):
     else:
         model = fasterrcnn_mobilenet_v3_large_320_fpn(num_classes=num_classes)
     return model
-
-
-def freeze_last_layers(model):
-    for param in model.parameters():
-        param.requires_grad = False
-    for param in model.layer4.parameters():
-        param.requires_grad = True
-    return model

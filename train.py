@@ -9,7 +9,7 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader, random_split
 
-from model import get_new_model_mobilenet, freeze_last_layers, get_new_model_mobilenet_320, get_new_model_fasterrcnn
+from model import get_new_model_mobilenet, get_new_model_mobilenet_320, get_new_model_fasterrcnn
 from dataset_pollen import PollenDataset, PollenFoodQSDataset
 from constants import batch_size, epochs, k, batch_size_validation, display_every_batches, device, cpu_device, losses_path, get_logger, models_path, get_default_optimizer
 
